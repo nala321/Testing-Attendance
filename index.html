@@ -48,6 +48,11 @@
   .hcard{padding:20px 18px 18px!important}
   .hcard-desc{display:block!important;font-size:12px}
 }
+/* ── Request leave: compact staff chip on mobile ─────────── */
+@media(max-width:700px){
+  #r-staff-chip{display:flex!important}
+  #r-staff-expanded{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -252,6 +257,23 @@
           </div>
         </div>
 
+        <!-- Mobile-only compact staff chip (hidden on desktop) -->
+        <div id="r-staff-chip" style="display:none;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;margin-bottom:10px">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(192,39,45,.1);border:1px solid rgba(192,39,45,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div style="min-width:0;flex:1">
+            <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+              <span id="r-chip-name" style="font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap">—</span>
+              <span style="font-size:11px;color:var(--txt3)">·</span>
+              <span id="r-chip-id" style="font-size:12px;font-weight:500;color:var(--txt2);font-family:monospace">—</span>
+            </div>
+            <div style="font-size:12px;color:var(--txt2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span id="r-chip-pos">—</span><span id="r-chip-gen-sep" style="color:var(--border)"> · </span><span id="r-chip-gen">—</span></div>
+          </div>
+        </div>
+
+        <!-- Expanded staff info (hidden on mobile) -->
+        <div id="r-staff-expanded">
         <div class="info-section-title fi" id="rsh1">Staff Information</div>
         <div class="fi" style="display:grid;grid-template-columns:1fr 2fr;gap:10px">
           <div class="info-item"><span class="info-item-label" id="rl-eid">Employee ID</span><span class="info-item-value" id="rf-eid-disp">—</span><input type="hidden" id="rf-eid"></div>
@@ -265,9 +287,7 @@
           <div class="info-item"><span class="info-item-label" id="rl-sdate">Submission Date</span><span class="info-item-value" id="rf-sdate-disp">—</span><input type="hidden" id="rf-sdate"></div>
           <div class="info-item"><span class="info-item-label" id="rl-sloc">Location</span><span class="info-item-value" id="rf-sloc-disp">—</span><input type="hidden" id="rf-sloc" value="Phnom Penh"></div>
         </div>
-
-
-      </div>
+        </div>
 
       <!-- RIGHT: fillable fields -->
       <div class="split-right">
