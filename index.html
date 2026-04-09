@@ -53,6 +53,126 @@
   #r-staff-chip{display:flex!important}
   #r-staff-expanded{display:none!important}
 }
+/* ═══════════════════════════════════════════════════════════
+   STATUS & HR PAGES — MOBILE OPTIMISATION (≤640px)
+═══════════════════════════════════════════════════════════ */
+@media(max-width:640px){
+
+  /* ── Status: force 3-col stat row (Total / Used / Remaining) */
+  #v-status .statrow{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+  #v-status .sbox{padding:10px 6px!important}
+  #v-status .snum{font-size:20px!important}
+
+  /* ── HR: compact greeting bar ─────────────────────────── */
+  #hr-greet{font-size:17px!important}
+
+  /* ── HR: nav tabs scroll horizontally, no wrap ─────────── */
+  .ntabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-wrap:nowrap!important}
+  .ntabs::-webkit-scrollbar{display:none}
+  .ntab{flex:0 0 auto!important;white-space:nowrap}
+
+  /* ── Shared: twrap must not clip card rows ──────────────── */
+  .twrap:has(#st-tbody),
+  .twrap:has(#st-notice-tbody),
+  .twrap:has(#hr-tbody),
+  .twrap:has(#hr-stbody){overflow-x:visible!important}
+
+  /* ── Shared: table → block for card layout ──────────────── */
+  table:has(#st-tbody),
+  table:has(#st-notice-tbody),
+  table:has(#hr-tbody),
+  table:has(#hr-stbody){display:block!important;min-width:0!important}
+
+  table:has(#st-tbody) thead,
+  table:has(#st-notice-tbody) thead,
+  table:has(#hr-tbody) thead,
+  table:has(#hr-stbody) thead{display:none!important}
+
+  table:has(#st-tbody) tbody,
+  table:has(#st-notice-tbody) tbody,
+  table:has(#hr-tbody) tbody,
+  table:has(#hr-stbody) tbody{display:block!important}
+
+  /* Each row becomes a card */
+  table:has(#st-tbody) tr,
+  table:has(#st-notice-tbody) tr,
+  table:has(#hr-tbody) tr,
+  table:has(#hr-stbody) tr{
+    display:block!important;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+
+  /* Each cell becomes a label–value row */
+  table:has(#st-tbody) td,
+  table:has(#st-notice-tbody) td,
+  table:has(#hr-tbody) td,
+  table:has(#hr-stbody) td{
+    display:flex!important;
+    justify-content:space-between;
+    align-items:center;
+    padding:9px 14px!important;
+    font-size:13px!important;
+    border-bottom:1px solid var(--border);
+    white-space:normal!important;
+    text-align:left!important;
+    gap:12px;
+  }
+  table:has(#st-tbody) td:last-child,
+  table:has(#st-notice-tbody) td:last-child,
+  table:has(#hr-tbody) td:last-child,
+  table:has(#hr-stbody) td:last-child{border-bottom:none}
+
+  /* Shared ::before label style */
+  table:has(#st-tbody) td::before,
+  table:has(#st-notice-tbody) td::before,
+  table:has(#hr-tbody) td::before,
+  table:has(#hr-stbody) td::before{
+    font-size:10px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--txt3);white-space:nowrap;flex-shrink:0;
+  }
+
+  /* ── Status: leave history table ────────────────────────── */
+  table:has(#st-tbody) td:nth-child(1){display:none!important}
+  table:has(#st-tbody) td:nth-child(2)::before{content:"Type"}
+  table:has(#st-tbody) td:nth-child(3)::before{content:"From"}
+  table:has(#st-tbody) td:nth-child(4)::before{content:"To"}
+  table:has(#st-tbody) td:nth-child(5)::before{content:"Days"}
+  table:has(#st-tbody) td:nth-child(6)::before{content:"Status"}
+  table:has(#st-tbody) td:nth-child(7){justify-content:flex-end}
+  table:has(#st-tbody) td:nth-child(7)::before{display:none}
+
+  /* ── Status: late/early notices table ───────────────────── */
+  table:has(#st-notice-tbody) td:nth-child(1)::before{content:"Type"}
+  table:has(#st-notice-tbody) td:nth-child(2)::before{content:"Date"}
+  table:has(#st-notice-tbody) td:nth-child(3)::before{content:"Time"}
+  table:has(#st-notice-tbody) td:nth-child(4){flex-direction:column;align-items:flex-start;gap:3px}
+  table:has(#st-notice-tbody) td:nth-child(4)::before{content:"Reason"}
+
+  /* ── HR: requests table ─────────────────────────────────── */
+  /* hide Req-ID (col1) and Days (col5) — must be explicit since display:flex!important above */
+  table:has(#hr-tbody) td:nth-child(1),
+  table:has(#hr-tbody) td:nth-child(5){display:none!important}
+  table:has(#hr-tbody) td:nth-child(2)::before{content:"Staff"}
+  table:has(#hr-tbody) td:nth-child(3)::before{content:"Type"}
+  table:has(#hr-tbody) td:nth-child(4)::before{content:"From"}
+  table:has(#hr-tbody) td:nth-child(6)::before{content:"Status"}
+  table:has(#hr-tbody) td:nth-child(7){flex-direction:column;align-items:stretch;gap:6px}
+  table:has(#hr-tbody) td:nth-child(7)::before{display:none}
+  table:has(#hr-tbody) td:nth-child(7)>div{width:100%!important;flex-wrap:wrap!important;gap:6px!important}
+  table:has(#hr-tbody) .abtn{font-size:12px!important;padding:7px 14px!important;min-height:34px!important;flex:1!important;text-align:center!important}
+
+  /* ── HR: staff registry table ───────────────────────────── */
+  table:has(#hr-stbody) td:nth-child(1){display:none!important}
+  table:has(#hr-stbody) td:nth-child(2)::before{content:"Name"}
+  table:has(#hr-stbody) td:nth-child(3)::before{content:"Position"}
+  table:has(#hr-stbody) td:nth-child(4)::before{content:"Total"}
+  table:has(#hr-stbody) td:nth-child(5)::before{content:"Used"}
+  table:has(#hr-stbody) td:nth-child(6)::before{content:"Remaining"}
+}
 </style>
 </head>
 <body>
