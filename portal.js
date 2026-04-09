@@ -97,6 +97,9 @@ function applyLang(){
     const nd=document.getElementById('rf-name-disp'),gd=document.getElementById('rf-gen-disp');
     if(nd)nd.textContent=name;if(gd)gd.textContent=gen;
     document.getElementById('rf-name').value=name;document.getElementById('rf-gen').value=gen;document.getElementById('rf-pos').value=pos;
+    // Update mobile chip
+    const _sd=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    _sd('r-chip-name',name);_sd('r-chip-pos',pos);_sd('r-chip-gen',gen);
     updateRBal();
   }if(stStaff)renderStDash();if(hrUser){hrRenderReqs();hrRenderStaff();}
 }
@@ -315,6 +318,8 @@ function rLoadForm(){
   const loc=s.location||'Phnom Penh';
   document.getElementById('rf-sloc').value=loc;
   sd('rf-eid-disp',s.empId);sd('rf-name-disp',name);sd('rf-gen-disp',gen);sd('rf-sdate-disp',today);sd('rf-sloc-disp',loc);
+  // Compact mobile chip
+  sd('r-chip-name',name);sd('r-chip-id',s.empId);sd('r-chip-pos',pos);sd('r-chip-gen',gen);
   updateRBal();
 }
 function updateRBal(){
