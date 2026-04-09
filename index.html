@@ -32,6 +32,22 @@
 /* ── Staff Info Chip ────────────────────────────────────── */
 .nt-info-chip{background:var(--surface2);border:1px solid var(--border);border-radius:24px;padding:9px 16px;font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .nt-ic-dot{width:7px;height:7px;border-radius:50%;background:#ca8a04;flex-shrink:0}
+/* ── Time segment buttons (HH / MM) ─────────────────────── */
+.nt-time-seg{font-size:40px;font-weight:700;color:var(--txt);background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer;min-width:74px;text-align:center;font-family:inherit;-webkit-tap-highlight-color:transparent;transition:border-color .15s,background .15s;line-height:1}
+.nt-time-seg:active,.nt-time-seg:focus{border-color:#ca8a04;outline:none;background:rgba(202,138,4,.08)}
+/* ── AM/PM toggle buttons ───────────────────────────────── */
+.nt-ampm-btn{font-size:13px;font-weight:600;padding:8px 13px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface2);color:var(--txt3);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;white-space:nowrap}
+.nt-ampm-btn.on{background:#ca8a04;color:#fff;border-color:#ca8a04}
+/* ── Numpad buttons ─────────────────────────────────────── */
+.nt-np-btn{font-size:26px;font-weight:500;padding:16px 0;border:none;border-radius:14px;background:var(--surface2);color:var(--txt);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s,background .1s;width:100%}
+.nt-np-btn:active{transform:scale(.92);background:var(--border)}
+.nt-np-fn{font-size:18px;color:var(--txt2)}
+/* ── Home cards — mobile single column ──────────────────── */
+@media(max-width:500px){
+  .home-cards{grid-template-columns:1fr!important;max-width:100%!important;gap:12px!important}
+  .hcard{padding:20px 18px 18px!important}
+  .hcard-desc{display:block!important;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -103,98 +119,56 @@
       </button>
     </div>
 
-    <!-- Main content (shown after gate verification) -->
-    <div id="nt-main" style="display:none" class="fi">
-      <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+    <!-- Phase 1: Type Selection (shown after gate) -->
+    <div id="nt-type-select" style="display:none" class="fi">
+      <div style="text-align:center;padding:36px 20px 20px">
+        <div style="font-size:27px;font-weight:700;color:var(--txt);font-family:var(--font-disp)">Are you?</div>
+      </div>
+      <div style="max-width:340px;margin:0 auto;padding:0 24px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center">
+        <div class="nt-type-card" id="nt-card-late" onclick="ntOpenPicker('late')" style="width:100%">
+          <div class="nt-card-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="nt-card-title" style="font-size:17px">Coming Late</div>
+        </div>
+        <div style="font-size:14px;color:var(--txt3);padding:14px 0;font-style:italic">Or</div>
+        <div class="nt-type-card" id="nt-card-early" onclick="ntOpenPicker('early')" style="width:100%">
+          <div class="nt-card-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+          <div class="nt-card-title" style="font-size:17px">Requesting Leave Early</div>
+        </div>
+        <div style="margin-top:20px;text-align:center">
+          <button onclick="ntBackToGate()" style="background:none;border:none;color:var(--txt3);font-size:13px;cursor:pointer;padding:6px 10px;text-decoration:underline;text-underline-offset:2px">← Change my information</button>
+        </div>
+      </div>
+    </div>
 
-        <!-- Left column: staff chip + type cards -->
-        <div style="flex:0 0 240px;min-width:200px;display:flex;flex-direction:column;gap:12px">
-          <div class="nt-info-chip">
-            <div class="nt-ic-dot"></div>
-            <strong id="nt-chip-name" style="color:var(--txt)"></strong>
-            <span style="color:var(--border)">|</span>
-            <span>ID: <strong id="nt-chip-id" style="color:var(--txt)"></strong></span>
-            <span id="nt-chip-pos-wrap" style="display:none"><span style="color:var(--border)">|</span> <span id="nt-chip-pos" style="color:var(--txt2)"></span></span>
-          </div>
-          <div class="nt-type-card" id="nt-card-late" onclick="ntOpenPicker('late')">
-            <div class="nt-card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </div>
-            <div class="nt-card-title">Late Arrival</div>
-            <div class="nt-card-sub">I arrived late today</div>
-          </div>
-          <div class="nt-type-card" id="nt-card-early" onclick="ntOpenPicker('early')">
-            <div class="nt-card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            </div>
-            <div class="nt-card-title">Leave Early</div>
-            <div class="nt-card-sub">Leaving before end of day</div>
-          </div>
-          <div style="text-align:center">
-            <button onclick="ntBackToGate()" style="background:none;border:none;color:var(--txt3);font-size:13px;cursor:pointer;padding:4px 8px;text-decoration:underline;text-underline-offset:2px">← Change my information</button>
+    <!-- Phase 2: Form (shown after type selection) -->
+    <div id="nt-form-screen" style="display:none" class="fi">
+      <div style="max-width:420px;margin:0 auto;padding:16px 20px 40px;box-sizing:border-box;width:100%">
+        <button onclick="ntBackToTypeSelect()" style="background:none;border:none;color:var(--txt3);font-size:13px;cursor:pointer;padding:0 0 20px 0;display:flex;align-items:center;gap:4px">← Back</button>
+        <!-- Staff info -->
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:28px">
+          <div style="font-size:17px;font-weight:700;color:var(--txt)" id="nt-fs-name"></div>
+          <div style="font-size:13px;color:var(--txt3);margin-top:3px">ID: <span id="nt-fs-id" style="color:var(--txt2);font-weight:500"></span></div>
+        </div>
+        <!-- Time section -->
+        <div style="font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px" id="nt-fs-time-lbl">Arrives at</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:32px;background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:18px 14px">
+          <button onclick="ntNumpadOpen('hh')" id="nt-fs-hh" class="nt-time-seg">--</button>
+          <span style="font-size:36px;font-weight:300;color:var(--txt3);line-height:1;margin-bottom:2px">:</span>
+          <button onclick="ntNumpadOpen('mm')" id="nt-fs-mm" class="nt-time-seg">--</button>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-left:6px">
+            <button id="nt-fs-am" onclick="ntFsAmPm('AM')" class="nt-ampm-btn on">AM</button>
+            <button id="nt-fs-pm" onclick="ntFsAmPm('PM')" class="nt-ampm-btn">PM</button>
           </div>
         </div>
-
-        <!-- Right column: inline form panel -->
-        <div id="nt-form-panel" style="display:none;flex:1;min-width:280px">
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden">
-            <!-- Panel header -->
-            <div style="display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)">
-              <span id="ntps-title" style="flex:1;font-size:16px;font-weight:700;color:var(--txt)">Late Arrival</span>
-              <button onclick="ntClosePicker()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:13px;color:var(--txt2);cursor:pointer">✕ Cancel</button>
-            </div>
-            <div style="padding:16px 18px">
-              <!-- Drum picker -->
-              <div style="position:relative;height:210px;overflow:hidden;margin-bottom:2px">
-                <div style="position:absolute;top:0;left:0;right:0;height:70px;background:linear-gradient(to bottom,var(--surface),transparent);pointer-events:none;z-index:2"></div>
-                <div style="position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(to top,var(--surface),transparent);pointer-events:none;z-index:2"></div>
-                <div style="position:absolute;top:50%;left:8px;right:8px;height:42px;transform:translateY(-50%);background:var(--surface2);border:1px solid var(--border);border-radius:10px;pointer-events:none;z-index:1"></div>
-                <div style="display:flex;align-items:center;justify-content:center;height:100%;gap:0">
-                  <div class="drum-col" id="drum-hh"></div>
-                  <div style="font-size:26px;font-weight:700;color:var(--txt);padding:0 2px;align-self:center;line-height:1">:</div>
-                  <div class="drum-col" id="drum-mm"></div>
-                  <div class="drum-col" id="drum-ap" style="width:56px"></div>
-                </div>
-              </div>
-              <!-- Manual override -->
-              <div style="text-align:center;font-size:11px;color:var(--txt3);margin:4px 0 8px">or type manually</div>
-              <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px">
-                <input type="text" id="nt-m-hh" inputmode="numeric" maxlength="2" placeholder="HH" oninput="ntManualToScroll()" style="width:52px;text-align:center;font-size:17px;padding:8px 6px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--txt)">
-                <span style="font-size:22px;color:var(--txt3)">:</span>
-                <input type="text" id="nt-m-mm" inputmode="numeric" maxlength="2" placeholder="MM" oninput="ntManualToScroll()" style="width:52px;text-align:center;font-size:17px;padding:8px 6px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--txt)">
-                <button class="time-ampm-btn on" id="nt-m-am" onclick="ntManualAmPm('AM')" style="margin-left:6px">AM</button>
-                <button class="time-ampm-btn" id="nt-m-pm" onclick="ntManualAmPm('PM')">PM</button>
-              </div>
-              <!-- Return time (Late Arrival only) -->
-              <div id="nt-return-row" style="display:none;margin-bottom:12px">
-                <div class="field">
-                  <label>Expected Return Time <span style="color:var(--txt3);font-weight:400">(optional)</span></label>
-                  <div class="time-picker">
-                    <input class="time-box" id="nt-return-hh" type="text" inputmode="numeric" maxlength="2" placeholder="HH" oninput="ntTBInput(this,1,12,'nt-return-mm')" onkeydown="ntTBKey(event,null,'nt-return-mm')">
-                    <span class="time-sep">:</span>
-                    <input class="time-box" id="nt-return-mm" type="text" inputmode="numeric" maxlength="2" placeholder="MM" oninput="ntTBInput(this,0,59,null)" onkeydown="ntTBKey(event,'nt-return-hh',null)">
-                    <div class="time-ampm">
-                      <button class="time-ampm-btn on" id="nt-return-am" onclick="ntSetAmPm('nt-return','AM')">AM</button>
-                      <button class="time-ampm-btn" id="nt-return-pm" onclick="ntSetAmPm('nt-return','PM')">PM</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Reason -->
-              <div class="field" style="margin-bottom:14px">
-                <label>Reason</label>
-                <textarea id="nt-reason" rows="2" placeholder="Brief explanation..." style="resize:none"></textarea>
-              </div>
-              <!-- Submit -->
-              <button class="btn btn-p" style="background:#ca8a04;box-shadow:none" onclick="ntSubmit()" id="nt-submit-btn">
-                <div class="spinner" id="nt-submit-sp"></div>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                Send Notice to HR
-              </button>
-            </div>
-          </div>
-        </div>
-
+        <!-- Reason -->
+        <div style="font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Reason</div>
+        <textarea id="nt-fs-reason" rows="4" placeholder="Brief explanation..." style="width:100%;box-sizing:border-box;resize:none;font-size:15px;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;background:var(--surface);color:var(--txt);font-family:inherit;line-height:1.55;margin-bottom:28px;display:block"></textarea>
+        <!-- Submit -->
+        <button class="btn btn-p" style="background:#ca8a04;box-shadow:none;width:100%;justify-content:center" onclick="ntSubmit()" id="nt-submit-btn">
+          <div class="spinner" id="nt-submit-sp"></div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send Notice to HR
+        </button>
       </div>
     </div>
 
@@ -965,6 +939,31 @@
         </button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ NUMPAD OVERLAY ══════════════════════ -->
+<div id="nt-numpad-overlay" style="display:none;position:fixed;inset:0;z-index:9999" onclick="ntNumpadClose()">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surface);border-radius:24px 24px 0 0;padding:22px 24px max(32px,env(safe-area-inset-bottom));max-width:480px;margin:0 auto;box-sizing:border-box" onclick="event.stopPropagation()">
+    <div style="width:36px;height:4px;border-radius:2px;background:var(--border2);margin:0 auto 18px"></div>
+    <div style="text-align:center;font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px" id="nt-numpad-label">Hour</div>
+    <div style="text-align:center;font-size:56px;font-weight:800;color:var(--txt);margin-bottom:20px;letter-spacing:8px;font-variant-numeric:tabular-nums;min-height:66px;line-height:1" id="nt-numpad-display">--</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
+      <button class="nt-np-btn" onclick="ntNumpadKey('1')">1</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('2')">2</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('3')">3</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('4')">4</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('5')">5</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('6')">6</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('7')">7</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('8')">8</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('9')">9</button>
+      <button class="nt-np-btn nt-np-fn" onclick="ntNumpadClear()">C</button>
+      <button class="nt-np-btn" onclick="ntNumpadKey('0')">0</button>
+      <button class="nt-np-btn nt-np-fn" onclick="ntNumpadBackspace()">⌫</button>
+    </div>
+    <button onclick="ntNumpadConfirm()" style="width:100%;padding:15px;font-size:16px;font-weight:700;background:#ca8a04;color:#fff;border:none;border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent">Done</button>
   </div>
 </div>
 
