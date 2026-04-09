@@ -1450,27 +1450,35 @@ function ntManualAmPm(val){
 }
 function ntOpenPicker(type){
   _ntCurrentType=type;
-  const title=document.getElementById('ntps-title');
-  if(title)title.textContent=type==='late'?'Late Arrival':'Leave Early';
-  const retRow=document.getElementById('nt-return-row');
-  if(retRow)retRow.style.display=type==='late'?'block':'none';
-  // Reset return time fields
-  ['nt-return-hh','nt-return-mm'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ntSetAmPm('nt-return','AM');
-  // Reset reason
-  const reason=document.getElementById('nt-reason');
+  // Set time label based on type
+  const lbl=document.getElementById('nt-fs-time-lbl');
+  if(lbl)lbl.textContent=type==='late'?'Arrives at':'Leaving at';
+  // Populate staff info in form
+  const fsName=document.getElementById('nt-fs-name');
+  const fsId=document.getElementById('nt-fs-id');
+  if(fsName&&ntStaff)fsName.textContent=ntStaff.name;
+  if(fsId&&ntStaff)fsId.textContent=ntStaff.empId;
+  // Pre-set current time
+  const now=new Date();
+  const h=now.getHours(),m=now.getMinutes();
+  const isAM=h<12;
+  const dispH=h%12||12;
+  const hhEl=document.getElementById('nt-fs-hh');
+  const mmEl=document.getElementById('nt-fs-mm');
+  if(hhEl)hhEl.textContent=String(dispH).padStart(2,'0');
+  if(mmEl)mmEl.textContent=String(m).padStart(2,'0');
+  ntFsAmPm(isAM?'AM':'PM');
+  // Clear reason
+  const reason=document.getElementById('nt-fs-reason');
   if(reason)reason.value='';
-  // Highlight selected type card
-  document.getElementById('nt-card-late')?.classList.toggle('nt-card-active',type==='late');
-  document.getElementById('nt-card-early')?.classList.toggle('nt-card-active',type==='early');
-  // Show inline form panel
-  const panel=document.getElementById('nt-form-panel');
-  if(panel)panel.style.display='block';
-  ntInitDrum();
+  // Transition to form screen
+  document.getElementById('nt-type-select').style.display='none';
+  document.getElementById('nt-form-screen').style.display='block';
 }
 function ntClosePicker(){
-  const panel=document.getElementById('nt-form-panel');
-  if(panel)panel.style.display='none';
+  // kept for compatibility; new flow uses ntBackToTypeSelect()
+  document.getElementById('nt-form-screen').style.display='none';
+  document.getElementById('nt-type-select').style.display='none';
   document.getElementById('nt-card-late')?.classList.remove('nt-card-active');
   document.getElementById('nt-card-early')?.classList.remove('nt-card-active');
 }
@@ -1517,17 +1525,78 @@ function ntGetTime(prefix){
 function ntReset(){
   ntStaff=null;_ntCurrentType=null;
   document.getElementById('nt-gate').style.display='block';
-  document.getElementById('nt-main').style.display='none';
+  document.getElementById('nt-type-select').style.display='none';
+  document.getElementById('nt-form-screen').style.display='none';
   document.getElementById('nt-success').style.display='none';
-  ntClosePicker();
   document.getElementById('nt-name-input').value='';
   document.getElementById('nt-id-input').value='';
   document.getElementById('nt-idfb').textContent='';
+  document.getElementById('nt-card-late')?.classList.remove('nt-card-active');
+  document.getElementById('nt-card-early')?.classList.remove('nt-card-active');
 }
 function ntBackToGate(){
-  document.getElementById('nt-main').style.display='none';
+  document.getElementById('nt-type-select').style.display='none';
+  document.getElementById('nt-form-screen').style.display='none';
   document.getElementById('nt-gate').style.display='block';
-  ntClosePicker();
+}
+function ntBackToTypeSelect(){
+  _ntCurrentType=null;
+  document.getElementById('nt-form-screen').style.display='none';
+  document.getElementById('nt-type-select').style.display='block';
+  document.getElementById('nt-card-late')?.classList.remove('nt-card-active');
+  document.getElementById('nt-card-early')?.classList.remove('nt-card-active');
+}
+function ntFsAmPm(val){
+  document.getElementById('nt-fs-am')?.classList.toggle('on',val==='AM');
+  document.getElementById('nt-fs-pm')?.classList.toggle('on',val==='PM');
+}
+// ── Numpad ────────────────────────────────────────────────────
+let _ntNumpadField=null;
+let _ntNumpadValue='';
+function ntNumpadOpen(field){
+  _ntNumpadField=field;
+  _ntNumpadValue='';
+  const lbl=document.getElementById('nt-numpad-label');
+  if(lbl)lbl.textContent=field==='hh'?'Hour':'Minute';
+  const disp=document.getElementById('nt-numpad-display');
+  if(disp)disp.textContent='--';
+  const overlay=document.getElementById('nt-numpad-overlay');
+  if(overlay){overlay.style.display='flex';overlay.style.alignItems='flex-end';overlay.style.justifyContent='center';}
+}
+function ntNumpadKey(digit){
+  if(_ntNumpadValue.length>=2)return;
+  _ntNumpadValue+=digit;
+  const disp=document.getElementById('nt-numpad-display');
+  if(disp)disp.textContent=_ntNumpadValue.length===1?'0'+_ntNumpadValue:_ntNumpadValue;
+}
+function ntNumpadBackspace(){
+  _ntNumpadValue=_ntNumpadValue.slice(0,-1);
+  const disp=document.getElementById('nt-numpad-display');
+  if(disp)disp.textContent=_ntNumpadValue?(_ntNumpadValue.length===1?'0'+_ntNumpadValue:_ntNumpadValue):'--';
+}
+function ntNumpadClear(){
+  _ntNumpadValue='';
+  const disp=document.getElementById('nt-numpad-display');
+  if(disp)disp.textContent='--';
+}
+function ntNumpadConfirm(){
+  if(!_ntNumpadValue){ntNumpadClose();return;}
+  const v=parseInt(_ntNumpadValue,10);
+  if(_ntNumpadField==='hh'){
+    if(v<1||v>12){toast('Hour must be 1–12','bad');return;}
+    const el=document.getElementById('nt-fs-hh');
+    if(el)el.textContent=String(v).padStart(2,'0');
+  } else {
+    if(v<0||v>59){toast('Minute must be 0–59','bad');return;}
+    const el=document.getElementById('nt-fs-mm');
+    if(el)el.textContent=String(v).padStart(2,'0');
+  }
+  ntNumpadClose();
+}
+function ntNumpadClose(){
+  const overlay=document.getElementById('nt-numpad-overlay');
+  if(overlay)overlay.style.display='none';
+  _ntNumpadField=null;_ntNumpadValue='';
 }
 async function ntVerify(){
   const name=document.getElementById('nt-name-input').value.trim();
@@ -1543,23 +1612,20 @@ async function ntVerify(){
     if(res.result==='success'){
       _gmo.cancel(true);
       ntStaff=res.staff;ntStaff.empId=id;
-      // Show staff info chip
-      const chipName=document.getElementById('nt-chip-name');
-      const chipId=document.getElementById('nt-chip-id');
-      const chipPos=document.getElementById('nt-chip-pos');
-      const chipPosWrap=document.getElementById('nt-chip-pos-wrap');
-      if(chipName)chipName.textContent=ntStaff.name||name;
-      if(chipId)chipId.textContent=id;
-      if(chipPos&&ntStaff.position){chipPos.textContent=ntStaff.position;if(chipPosWrap)chipPosWrap.style.display='';}
       document.getElementById('nt-gate').style.display='none';
-      document.getElementById('nt-main').style.display='block';
+      document.getElementById('nt-type-select').style.display='block';
     } else {_gmo.cancel(false);fb.textContent='Name or ID not found.';fb.className='idfb err';setTimeout(()=>gateSetError('nt-gate'),210);}
   }catch(e){_gmo.cancel(false);toast('Error','bad');}finally{gateSetLoading('nt-gate','nt-gate-btn',false);sp.style.display='none';}
 }
 async function ntSubmit(){
-  const time=ntGetDrumTime();
-  const ret=ntGetTime('nt-return');
-  const reason=document.getElementById('nt-reason').value.trim();
+  const hhEl=document.getElementById('nt-fs-hh');
+  const mmEl=document.getElementById('nt-fs-mm');
+  const hh=hhEl?.textContent?.trim();
+  const mm=mmEl?.textContent?.trim();
+  const isAM=document.getElementById('nt-fs-am')?.classList.contains('on');
+  const ap=isAM?'AM':'PM';
+  const time=(hh&&mm&&hh!=='--'&&mm!=='--')?`${hh}:${mm} ${ap}`:'';
+  const reason=document.getElementById('nt-fs-reason').value.trim();
   if(!time){toast('Please select a time','bad');return;}
   if(!reason){toast('Please enter a reason','bad');return;}
   const btn=document.getElementById('nt-submit-btn'),sp=document.getElementById('nt-submit-sp');
@@ -1569,13 +1635,12 @@ async function ntSubmit(){
       const res=await apiPost('sendNotice',{
         noticeType:_ntCurrentType,
         name:ntStaff.name,empId:ntStaff.empId,
-        time,returnTime:ret||'—',reason,
+        time,returnTime:'—',reason,
         noticeDate:new Date().toLocaleDateString('en-GB')
       });
       if(res.result!=='success')throw new Error('failed');
     }
-    ntClosePicker();
-    document.getElementById('nt-main').style.display='none';
+    document.getElementById('nt-form-screen').style.display='none';
     document.getElementById('nt-success').style.display='flex';
   }catch(e){toast('Failed to send. Try again.','bad');}finally{btn.disabled=false;sp.style.display='none';}
 }
