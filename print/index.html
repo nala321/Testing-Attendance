@@ -121,33 +121,38 @@ html,body{
   html,body{margin:0;padding:0;background:white;height:297mm}
   .print-bar{display:none!important}
 
-  /* Block layout avoids Chrome flex/print overflow bug */
   .page{
     display:block;
     margin:0;
-    padding:6mm 18mm 22mm 18mm;
+    padding:6mm 18mm 38mm 18mm;
     box-shadow:none;
     width:210mm;
     min-height:auto;
-    position:relative;
   }
 
-  /* Footer pinned to bottom via fixed positioning */
-  .pf-footer{
+  .pf-footer-wrap{
     position:fixed;
-    bottom:6mm;
-    left:18mm;
-    right:18mm;
+    bottom:0;
+    left:0;
+    right:0;
+    padding:0 18mm 6mm 18mm;
+    background:white;
+    -webkit-transform:translateZ(0);
+    transform:translateZ(0);
+  }
+
+  .pf-reqid{
+    position:static;
+    margin-bottom:1mm;
+    text-align:right;
+  }
+
+  .pf-footer{
+    position:static;
     margin-top:0;
     border-top:2.5pt solid #000;
     padding:2mm 0 0;
     background:white;
-  }
-  .pf-reqid{
-    position:fixed;
-    bottom:20mm;
-    right:18mm;
-    margin-bottom:0;
   }
 
   /* Tighten content spacing for print */
@@ -281,19 +286,19 @@ body{padding-top:52px}
     </table>
   </div>
 
-  <!-- REQ ID -->
-  <div class="pf-reqid" id="pf-reqid"></div>
-
-  <!-- FOOTER -->
-  <div class="pf-footer">
-    <div class="pf-footer-inner">
-      <div class="pf-footer-left">
-        <span class="pf-footer-co">LOCKTON IBS INSURANCE BROKERS (CAMBODIA) CO., LTD.</span>
-        <span class="pf-footer-kh">អគារ Diamond Twin Tower, ជាន់ទី18, បន្ទប់លេខ S1809, កោះពេជ្រ, រាជធានីភ្នំពេញ</span>
-        <span class="pf-footer-en">Diamond Twin Tower, 18th Floor, Unit S1809, Diamond Island, Phnom Penh, Cambodia</span>
-      </div>
-      <div class="pf-footer-right">
-        +855 (0) 23 988 111<br>+855 (0) 89 788 111<br>www.lockton-ibs.com
+  <div class="pf-footer-wrap">
+    <div class="pf-reqid" id="pf-reqid"></div>
+    <!-- FOOTER -->
+    <div class="pf-footer">
+      <div class="pf-footer-inner">
+        <div class="pf-footer-left">
+          <span class="pf-footer-co">LOCKTON IBS INSURANCE BROKERS (CAMBODIA) CO., LTD.</span>
+          <span class="pf-footer-kh">អគារ Diamond Twin Tower, ជាន់ទី18, បន្ទប់លេខ S1809, កោះពេជ្រ, រាជធានីភ្នំពេញ</span>
+          <span class="pf-footer-en">Diamond Twin Tower, 18th Floor, Unit S1809, Diamond Island, Phnom Penh, Cambodia</span>
+        </div>
+        <div class="pf-footer-right">
+          +855 (0) 23 988 111<br>+855 (0) 89 788 111<br>www.lockton-ibs.com
+        </div>
       </div>
     </div>
   </div>
